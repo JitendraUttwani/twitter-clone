@@ -25,7 +25,7 @@ onMounted(() => {
             <img src="~/assets/images/twitter-logo.jpg" class="h-16 w-20"/>
             <ul class="flex flex-col gap-2 mt-3 text-xl">
                 <li v-for="(ele,index) in arr" :key="index" class="">
-                    <NuxtLink class="flex items-center gap-2 py-2 px-4 w-full hover:bg-gray-800 rounded-xl transition-colors" :to="`/${ele.toLowerCase()}`">{{ ele }}</NuxtLink>
+                    <NuxtLink class="flex items-center gap-2 py-2 px-4 w-full hover:bg-gray-800 rounded-xl transition-colors" :to="`/${ele.toLowerCase() === 'profile' ? 'profile': 'home'}`">{{ ele }}</NuxtLink>
                 </li>
             </ul>
             <div class="bg-blue-500 cursor-pointer text-white font-bold text-center p-3 mt-4 rounded-3xl w-4/6">Post</div>
