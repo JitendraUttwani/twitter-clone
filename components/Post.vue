@@ -1,31 +1,47 @@
+<script setup>
+import {formatDistanceToNow} from 'date-fns'
+
+const props = defineProps({
+  post: {
+    type: Object,
+    required: true,
+  },
+});
+console.log(props.post);
+</script>
+
+
+
 <template>
-    <div class="flex border-gray-600 w-full">
-        <div class="p-3 border-r-2 border-gray-600">
-            <img src="~/assets/images/photo.jpg" alt="" class="h-12 w-12 rounded-full">
+    <div class="flex border-gray-600 w-full border-b-2">
+        <div class="p-3 border-r-2 border-gray-600 cursor-pointer" @click="navigateTo(`/profile/${props.post.user_id}`)">
+            <img v-if="props.post.user.profilePicture" :src="props.post.user.profilePicture" alt="" class="h-12 w-12 rounded-full">
+            <img v-else src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
         </div>
         <div class="flex flex-col">
-            <div class="flex p-2">
+            <div class="flex p-2 cursor-pointer" @click="navigateTo(`/profile/${props.post.user_id}`)">
                 <h1 class="">
-                    Jitendra  
+                    {{ props.post.user.name }} 
                 </h1>
-                <span class="ml-2 text-gray-600">@Jitendra</span>
-                <span class="ml-2 text-gray-600">1hr</span>
-                <span class="ml-96">l</span>
+                <span class="ml-2 text-gray-600">@{{ props.post.user.username }}</span>
+                <span class="ml-2 text-gray-600"> . {{ formatDistanceToNow(new Date(props.post.created_at), { addSuffix: true }).replace('about ','') }}</span>
+                <!-- <font-awesome-icon class="ml-96 text-xl cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="ellipsis" /> -->
             </div>
             <p class="text-left pl-2">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quaerat.
+                {{ props.post.message }}
             </p>
-            <div class="m-4 border rounded-2xl w-5/6">
+            <div v-if="props.post.image" class="m-4 border rounded-2xl w-5/6">
                 <img class="object-fit h-72 w-full rounded-2xl"src="~/assets/images/twitter-logo.jpg"/>
             </div>
             <div>
                 <div>
                     <ul class="flex flex-row p-4 list-none gap-8 justify-between items-between">
-                        <li>I</li>
-                        <li>I</li>
-                        <li>I</li>
-                        <li>I</li>
-                        <li>I</li>
+                        <!-- <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="comment-dots" />
+                        <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="retweet" />
+                        <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="heart" />
+                        <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="chart-simple" />
+                        <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="bookmark" />
+                        <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="arrow-up-from-bracket" /> -->
                     </ul>
                 </div>
             </div> 

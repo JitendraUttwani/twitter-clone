@@ -1,24 +1,68 @@
 <script setup>
-import {users} from '~/assets/data/users.js'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 let user = ref(null);
 let accountExists = ref(false);
 let email = ref('');
 let password = ref('');
-const nextStep = () => {
-    const result = users.find(user => user.email === email.value);
-    if(result){
-        user.value = result;
-        accountExists.value = true;
-    }else{
-        alert('Please enter correct email');
+const router = useRouter();
+
+const nextStep = async () => {
+    if (!email.value) {
+        return alert('Please enter an email');
     }
-}
-const login = () => {
-    if(user && user.value.password === password.value){
-        return navigateTo('/home');
+
+    try {
+        const { data, error } = await useFetch('http://localhost:5000/api/v1/auth/check-email', {
+            method: 'POST',
+            body: { email: email.value },
+        });
+
+        if (error.value) {
+            throw new Error(error.value);
+        }
+        // console.log(data.value);
+        if (data.value.data) {
+            accountExists.value = true;
+        } else {
+            alert('Email not found. Please sign up.');
+            router.push('/i/flow/signup');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
     }
-    alert('Please enter correct password');
-}
+};
+
+const login = async () => {
+    if (!email.value || !password.value) {
+        return alert('Please enter your email and password');
+    }
+
+    try {
+        const { data, error } = await useFetch('http://localhost:5000/api/v1/auth/login', {
+            method: 'POST',
+            body: { email: email.value, password: password.value },
+        });
+
+        if (error.value) {
+            throw new Error(error.value);
+        }
+
+        if (data.value.token) {
+            localStorage.setItem('token', data.value.token);
+            console.log(data.value.data);
+            localStorage.setItem('user', JSON.stringify(data.value.data));
+            router.push('/home');
+        } else {
+            alert('Incorrect email or password. Please try again.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    }
+};
 </script>
 
 

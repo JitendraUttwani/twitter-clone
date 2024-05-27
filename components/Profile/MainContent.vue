@@ -1,5 +1,34 @@
 <script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import Post from '~/components/Post.vue';
+import PostTweet from '~/components/PostTweet.vue';
 
+const posts = ref([]);
+const fetchTimeline = async () => {
+    try {
+    const response = await axios.get('http://localhost:5000/api/v1/user/timeline', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    // console.log(response.data);
+    if (response.success === false) {
+      console.error('Error fetching timeline:', fetchError.value);
+      error.value = fetchError.value;
+    } else {
+      posts.value = response.data.data;
+    }
+  } catch (err) {
+    console.error('Unexpected error fetching timeline:', err);
+    error.value = err;
+  }
+};
+
+onMounted(() => {
+    fetchTimeline();
+});
+// console.log(posts.value);
 </script>
 
 
@@ -20,12 +49,10 @@
         <div class="border text-blue-500 p-3 border-gray-600 text-center">
             Show All posts
         </div>
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+        <div v-for="post in posts" :key="post.post_id">
+            <!-- {{ console.log(post) }} -->
+            <Post :post="post" />
+        </div>
         
 
     </div>

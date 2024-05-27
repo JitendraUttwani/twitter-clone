@@ -3,11 +3,15 @@ import { ref } from 'vue'
 import axios from 'axios'
 import {format} from 'date-fns'
 
-
+const props = defineProps({
+    id: String
+})
 const user = ref({})
 const postDetails = ref([])
+const follows = ref(false);
 const numOfFollowers = ref(0);
 const numOfFollowings = ref(0);
+
 
 const posts = computed(() => {
     const newPosts = postDetails.value.map((post) => {
@@ -22,23 +26,21 @@ const posts = computed(() => {
 
 const fetchUserProfile = async () => {
     try{
-
-        const response = await axios.get('http://localhost:5000/api/v1/user/profile', {
+        const response = await axios.get(`http://localhost:5000/api/v1/user/profile/${props.id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         })
-        // console.log(response.data);
     
         if (response.data.success) {
-            console.log(response.data.data)
+            console.log(response.data.data);
           user.value = response.data.data.user;
           user.value.created_at = format(new Date(user.value.created_at), 'dd MMMM yyyy');
           postDetails.value = response.data.data.userPosts;
+          follows.value = response.data.data.user.follows;
           numOfFollowers.value = response.data.data.followers.length;
           numOfFollowings.value = response.data.data.followings.length;
-        //   console.log(user.value);
-        //   console.log(posts.value);
+        //   console.log(user.value.follows);
         } else {
           console.error('Error fetching user profile:', error.value)
         }
@@ -52,6 +54,66 @@ const fetchUserProfile = async () => {
 onMounted(() => {
     fetchUserProfile();
 })
+
+const follow = async (user_id) => {
+    try {
+        console.log(user_id);
+        console.log(localStorage.getItem('token'))
+        // event.stopPropagation();
+        const token = 'Bearer ' + localStorage.getItem('token');
+        const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
+        const {data,error} = await useFetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: token
+            },
+        });
+        // console.log(data);
+        if (data.value.success === false) {
+            console.error('Error following user:');
+        }else{
+            console.log(data.value);
+            follows.value = true;
+            // followed.value.push(user_id);
+        }
+        
+        
+    } catch (err) {
+        console.error('Unexpected error following user:', err);
+        error.value = err;
+    }
+}
+
+
+const unfollow = async (user_id) => {
+    try {
+        // event.stopPropagation();
+        const token = 'Bearer ' + localStorage.getItem('token');
+        const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
+        const {data,error} = await useFetch(url, {
+            method: 'DELETE',
+            headers: {
+                Authorization: token
+            },
+        });
+        // console.log(data);
+        if (data.value.success === false) {
+            console.error('Error unfollowing user:');
+        }else{
+            follows.value = false;
+            // followed.value.splice(followed.value.indexOf(user_id),1);
+        }
+  } catch (err) {
+    console.error('Unexpected error following user:', err);
+    error.value = err;
+  }
+}
+
+
+
+console.log(user.value.follows);
+
+
 </script>
 
 
@@ -76,13 +138,15 @@ onMounted(() => {
                     <h1 class="font-bold text-left mt-2 text-lg">{{user.name}}</h1>
                     <p class="text-gray-400 text-sm">@{{user.username}}</p>
                 </div>
-                <div class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="">Edit Profile</div>
+                <div v-if="!follows" class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="follow(user.user_id)">Follow</div>
+                <div v-else class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="unfollow(user.user_id)">unFollow</div>
+                
             </div>
             <div class="ml-5 mt-4">
                 <p class="text-left text-gray-200">{{user.bio}}</p>
                 <div class="flex justify-between mt-1">
                     <p class="text-gray-400">Software developer</p>
-                    <p class="text-gray-400 mr-3">Joined {{user.created_at}}</p>
+                    <p class="text-gray-400 mr-3">{{user.created_at}}</p>
                 </div>
                 <div class="mt-2 flex">
                     <p class="text-gray-400"><span class="text-gray-100">{{numOfFollowings}}</span> Following</p>
@@ -100,7 +164,10 @@ onMounted(() => {
             <p class="text-gray-400">Likes</p>           
         </div>
         <div v-for="post in posts" :key="post.post_id">
+
             <Post :post="post" />
-        </div> 
+        </div>
+        
+        
     </div>
 </template>
