@@ -1,7 +1,8 @@
 <script setup>
 
 definePageMeta({
-    middleware: ['auth']
+    middleware: ['auth'],
+    layout: 'home',
 })
 
 
@@ -9,9 +10,5 @@ definePageMeta({
 
 
 <template>
-    <div class="grid grid-cols-4 text-center h-full">
-        <ProfileLeftBar />
-        <ProfileAccount />
-        <ProfileRightBar />
-    </div>
+    <ProfileAccount />
 </template>

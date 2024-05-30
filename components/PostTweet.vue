@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 
 let text = ref('');
 
@@ -16,7 +15,7 @@ const postTweet = async () => {
       body: JSON.stringify({ message: text.value }),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${getCookie('token')}`,
       },
     });
 

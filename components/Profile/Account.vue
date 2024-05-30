@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue'
 import axios from 'axios'
 import {format} from 'date-fns'
 
@@ -9,15 +8,7 @@ const postDetails = ref([])
 const numOfFollowers = ref(0);
 const numOfFollowings = ref(0);
 
-const posts = computed(() => {
-    const newPosts = postDetails.value.map((post) => {
-        return {
-            user: user.value,
-            ...post
-        }
-    })
-    return newPosts;
-})
+const posts = computed(() => postDetails.value.map((post) => ({user: user.value,...post})));
 
 
 const fetchUserProfile = async () => {
@@ -25,7 +16,7 @@ const fetchUserProfile = async () => {
 
         const response = await axios.get('http://localhost:5000/api/v1/user/profile', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${useCookie('token').value}`
           }
         })
         // console.log(response.data);

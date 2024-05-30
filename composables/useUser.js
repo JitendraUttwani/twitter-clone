@@ -6,8 +6,8 @@ export const useUser = () => {
   const token = ref(null);
   
   if (process.client) {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    const storedUser = getCookie('user');
+    const storedToken = getCookie('token');
     if (storedUser && storedToken) {
       user.value = JSON.parse(storedUser);
       token.value = storedToken;
@@ -18,20 +18,20 @@ export const useUser = () => {
   const setUser = (userData) => {
     user.value = userData;
     isAuthenticated.value = true;
-    localStorage.setItem('user', JSON.stringify(userData));
+    getCookie('user', JSON.stringify(userData));
   };
 
   const setToken = (userToken) => {
     token.value = userToken;
-    localStorage.setItem('token', userToken);
+    awr('token', userToken);
   };
 
   const clearUser = () => {
     user.value = null;
     isAuthenticated.value = false;
     token.value = null;
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    deleteCookie('user');
+    deleteCookie('token');
   };
 
   return {

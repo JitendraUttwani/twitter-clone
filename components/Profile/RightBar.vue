@@ -1,38 +1,39 @@
 <script setup>
 
-import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 
 const users = ref([]);
 const followed = ref([]);
-const fetchSuggestions = async () => {
-    try {
-        const response = await axios.get('http://localhost:5000/api/v1/user/suggestions', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        });
-        if (response.success === false) {
-            console.error('Error fetching timeline:');
-        } else {
-            // console.log(response.data.data);
-            users.value = response.data.data;
-            console.log(users.value);
-        }
-    } catch (err) {
-        console.error('Unexpected error fetching timeline:', err);
+const { data: userData, error } = await useAsyncData('users', async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/api/v1/user/suggestions', {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`,
+      },
+    });
+    if (response.data.success) {
+      return response.data.data;
+    } else {
+      console.error('Error fetching suggestions');
+      return [];
     }
-  
-};
+  } catch (err) {
+    console.error('Unexpected error fetching suggestions:', err);
+    return [];
+  }
+});
+
+if (!error.value) {
+  users.value = userData.value;
+}
 
 
 const follow = async (user_id,event) => {
     try {
-        console.log(user_id);
-        console.log(localStorage.getItem('token'))
         event.stopPropagation();
-        const token = 'Bearer ' + localStorage.getItem('token');
+
+        const token = 'Bearer ' + getCookie('token');
         const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
@@ -54,15 +55,11 @@ const follow = async (user_id,event) => {
         error.value = err;
     }
 }
-onMounted(() => {
-    fetchSuggestions();
-    // console.log(users.value);
-});
 
 const unfollow = async (user_id,event) => {
     try {
         event.stopPropagation();
-        const token = 'Bearer ' + localStorage.getItem('token');
+        const token = 'Bearer ' + getCookie('token');
         const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',
@@ -107,21 +104,23 @@ const unfollow = async (user_id,event) => {
                 <h3>Ullu</h3>
                 <p class="text-gray-600">Trending with #SRHvsGT, #KiaraAdvani</p>
             </div>
-            <NuxtLink class="text-left text-blue-500">Show more</NuxtLink>
+            <p class="text-left text-blue-500">Show more</p>
         </div>
         <div class="ml-10 mt-10 flex flex-col gap-2">
             <h1 class="text-left font-bold text-xl">Who to follow</h1>
-            <div v-for="user in users" @click="navigateTo(`/profile/${user.user_id}`)" class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-2 rounded-2xl w-4/6">
-                <img src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
-                <div class="flex flex-col">
-                    <span class="ml-2 text-white">{{user.name}}</span>
-                    <span class="ml-2 font-medium">@{{user.username}}</span>
-                </div>
-                <div v-if="!followed.includes(user.user_id)" class="bg-white ml-5 cursor-pointer text-slate-700 text-center font-bold p-2 justify-center items-center mt-4 rounded-2xl w-1/2" @click="follow(user.user_id,$event)">Follow</div>
-                <div v-else class="bg-white ml-5 cursor-pointer text-slate-700 text-center font-bold p-2 justify-center items-center mt-4 rounded-2xl w-1/2" @click="unfollow(user.user_id,$event)">unFollow</div>
+            <div v-for="user in users"  class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-2 rounded-2xl w-4/6">
+                <NuxtLink :to="`/profile/${user.user_id}`" class="flex flex-row mr-10">
+                    <img src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
+                    <div class="flex flex-col">
+                        <span class="ml-2 text-white">{{user.name}}</span>
+                        <span class="ml-2 font-medium">@{{user.username}}</span>
+                    </div>
+                </NuxtLink>
+                <div v-if="!followed.includes(user.user_id)" class="bg-white ml-12 cursor-pointer text-slate-700 align-middle self-center justify-self-center text-center font-bold p-2 justify-center items-center mt-1 h-10 rounded-2xl w-1/2" @click="follow(user.user_id,$event)">Follow</div>
+                <div v-else class="bg-white ml-12 cursor-pointer text-slate-700 align-middle self-center justify-self-center text-center font-bold p-2 justify-center items-center mt-1 rounded-2xl w-1/2" @click="unfollow(user.user_id,$event)">unFollow</div>
             </div>
           
-            <NuxtLink class="text-left text-blue-500">Show more</NuxtLink>
+            <p class="text-left text-blue-500">Show more</p>
         </div>
     </div>
 </template>

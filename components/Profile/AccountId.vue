@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue'
 import axios from 'axios'
 import {format} from 'date-fns'
 
@@ -28,7 +27,7 @@ const fetchUserProfile = async () => {
     try{
         const response = await axios.get(`http://localhost:5000/api/v1/user/profile/${props.id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${getCookie('token')}`
           }
         })
     
@@ -58,9 +57,9 @@ onMounted(() => {
 const follow = async (user_id) => {
     try {
         console.log(user_id);
-        console.log(localStorage.getItem('token'))
+        console.log(getCookie('token'))
         // event.stopPropagation();
-        const token = 'Bearer ' + localStorage.getItem('token');
+        const token = 'Bearer ' + getCookie('token');
         const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
@@ -88,7 +87,7 @@ const follow = async (user_id) => {
 const unfollow = async (user_id) => {
     try {
         // event.stopPropagation();
-        const token = 'Bearer ' + localStorage.getItem('token');
+        const token = 'Bearer ' + getCookie('token');
         const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',

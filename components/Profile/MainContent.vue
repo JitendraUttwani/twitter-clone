@@ -1,33 +1,33 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+
 import axios from 'axios';
 import Post from '~/components/Post.vue';
 import PostTweet from '~/components/PostTweet.vue';
 
 const posts = ref([]);
-const fetchTimeline = async () => {
-    try {
+const { data: timelineData, error } = await useAsyncData('timeline', async () => {
+  try {
+    const token = getCookie('token');
     const response = await axios.get('http://localhost:5000/api/v1/user/timeline', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-    // console.log(response.data);
-    if (response.success === false) {
-      console.error('Error fetching timeline:', fetchError.value);
-      error.value = fetchError.value;
+    if (response.data.success === false) {
+      console.error('Error fetching timeline');
+      return [];
     } else {
-      posts.value = response.data.data;
+      return response.data.data;
     }
   } catch (err) {
     console.error('Unexpected error fetching timeline:', err);
-    error.value = err;
+    return [];
   }
-};
-
-onMounted(() => {
-    fetchTimeline();
 });
+
+if (!error.value) {
+  posts.value = timelineData.value;
+}
 // console.log(posts.value);
 </script>
 

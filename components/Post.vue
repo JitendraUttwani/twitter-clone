@@ -4,19 +4,24 @@
 
 <template>
     <div class="flex border-gray-600 w-full border-b-2">
-        <div class="p-3 border-r-2 border-gray-600 cursor-pointer" @click="navigateTo(`/profile/${post.user_id}`)">
-            <img v-if="post.user.profilePicture" :src="post.user.profilePicture" alt="" class="h-12 w-12 rounded-full">
-            <img v-else src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
-        </div>
-        <div class="flex flex-col">
-            <div class="flex p-2 cursor-pointer" @click="navigateTo(`/profile/${post.user_id}`)">
-                <h1 class="">
-                    {{ post.user.name }} 
-                </h1>
-                <span class="ml-2 text-gray-600">@{{ post.user.username }}</span>
-                <span class="ml-2 text-gray-600"> . {{ formatDate(post.created_at) }}</span>
-                <!-- <font-awesome-icon class="ml-96 text-xl cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="ellipsis" /> -->
+        <NuxtLink :to="`/profile/${post.user_id}`">
+            <div class="p-3 border-r-2 border-gray-600 cursor-pointer">
+                <img v-if="post.user.profilePicture" :src="post.user.profilePicture" alt="" class="h-12 w-12 rounded-full">
+                <img v-else src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
             </div>
+        </NuxtLink>
+        <div class="flex flex-col">
+            <NuxtLink :to="`/profile/${post.user_id}`">
+                <div class="flex p-2 cursor-pointer">
+                    <h1 class="">
+                        {{ post.user.name }} 
+                        
+                    </h1>
+                    <span class="ml-2 text-gray-600">@{{ post.user.username }}</span>
+                    <span class="ml-2 text-gray-600"> . {{ formatDate(post.created_at) }}</span>
+                    <!-- <font-awesome-icon class="ml-96 text-xl cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="ellipsis" /> -->
+                </div>
+            </NuxtLink>
             <p class="text-left pl-2">
                 {{ post.message }}
             </p>
@@ -54,10 +59,7 @@ export default {
   methods: {
     formatDate(date) {
       return formatDistanceToNow(new Date(date), { addSuffix: true }).replace('about ', '');
-    },
-    navigateTo(url) {
-      this.$router.push(url);
-    },
+    }
   },
 };
 </script>

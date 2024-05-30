@@ -1,21 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 
 const arr = ['Home', 'Explore', 'Notifications', 'Messages', 'Grok', 'Lists', 'Communities', 'Premium', 'Profile', 'More'];
+
 const user = ref(null);
 
-onMounted(() => {
-    if (process.client) {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            try {
-                user.value = JSON.parse(storedUser);
-            } catch (err) {
-                console.error('Error parsing user from localStorage:', err);
-            }
-        }
-    }
+const { data: userData } = await useAsyncData('user', () => {
+  const userCookie = getCookie('user');
+  console.log(userCookie);
+  return userCookie;
 });
+
+if (userData.value) {
+  user.value = userData.value;
+}
 
 </script>
 
@@ -29,14 +26,15 @@ onMounted(() => {
                 </li>
             </ul>
             <div class="bg-blue-500 cursor-pointer text-white font-bold text-center p-3 mt-4 rounded-3xl w-4/6">Post</div>
-            <div v-if="user" @click="navigateTo('/profile')" class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-4 rounded-2xl w-4/6 hover:bg-gray-800 transition-colors">
-                <img src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
-                <div class="flex flex-col">
-                    <span class="ml-2 text-white">{{user.name}}</span>
-                    <span class="ml-2 font-medium">@{{user.username}}</span>
-                </div>
-                <!-- <font-awesome-icon class="ml-8 text-xl" icon="ellipsis" /> -->
+            <NuxtLink to="/profile" v-if="user" class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-4 rounded-2xl w-4/6 hover:bg-gray-800 transition-colors">
+                    <img src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
+                    <div class="flex flex-col">
+                        <span class="ml-2 text-white">{{user.name}}</span>
+                        <span class="ml-2 font-medium">@{{user.username}}</span>
+                    </div>
+                    <!-- <font-awesome-icon :icon="['fas', 'ellipsis']" /> -->
+                    <!-- <font-awesome icon="ellipsis" /> -->
                 <!-- <i class="fa-solid fa-ellipsis"></i> -->
-            </div>
+           </NuxtLink>
     </div>
 </template>
