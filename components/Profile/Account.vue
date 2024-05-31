@@ -14,7 +14,7 @@ const posts = computed(() => postDetails.value.map((post) => ({user: user.value,
 const fetchUserProfile = async () => {
     try{
 
-        const response = await axios.get('http://localhost:5000/api/v1/user/profile', {
+        const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/profile', {
           headers: {
             Authorization: `Bearer ${useCookie('token').value}`
           }

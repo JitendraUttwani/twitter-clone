@@ -7,7 +7,7 @@ const users = ref([]);
 const followed = ref([]);
 const { data: userData, error } = await useAsyncData('users', async () => {
   try {
-    const response = await axios.get('http://localhost:5000/api/v1/user/suggestions', {
+    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/suggestions', {
       headers: {
         Authorization: `Bearer ${getCookie('token')}`,
       },
@@ -34,7 +34,7 @@ const follow = async (user_id,event) => {
         event.stopPropagation();
 
         const token = 'Bearer ' + getCookie('token');
-        const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
+        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/follow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
             headers: {
@@ -60,7 +60,7 @@ const unfollow = async (user_id,event) => {
     try {
         event.stopPropagation();
         const token = 'Bearer ' + getCookie('token');
-        const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
+        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/unfollow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',
             headers: {

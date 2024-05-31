@@ -5,14 +5,14 @@ import axios from 'axios';
 
 const token = getCookie('token');
 
-const { data: timelineData, error } = await useAsyncData('timeline', async () => {
+const { data: timelineData, error } = await useAsyncData(async () => {
   try{
 
     if (!token) {
       throw new Error('No token found');
     }
   
-    const response = await axios.get('http://localhost:5000/api/v1/user/timeline', {
+    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/timeline', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
