@@ -25,7 +25,7 @@ const posts = computed(() => {
 
 const fetchUserProfile = async () => {
     try{
-        const response = await axios.get(`https://twitter-clone-api-6kjm.onrender.com/api/v1/user/profile/${props.id}`, {
+        const response = await axios.get(`http://localhost:5000/api/v1/user/profile/${props.id}`, {
           headers: {
             Authorization: `Bearer ${getCookie('token')}`
           }
@@ -60,7 +60,7 @@ const follow = async (user_id) => {
         console.log(getCookie('token'))
         // event.stopPropagation();
         const token = 'Bearer ' + getCookie('token');
-        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/follow/${user_id}`;
+        const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
             headers: {
@@ -88,7 +88,7 @@ const unfollow = async (user_id) => {
     try {
         // event.stopPropagation();
         const token = 'Bearer ' + getCookie('token');
-        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/unfollow/${user_id}`;
+        const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',
             headers: {
@@ -168,5 +168,8 @@ console.log(user.value.follows);
         </div>
         
         
+    </div>
+    <div v-else class="col-start-2 col-end-4 border-gray-600 flex flex-col h-full">
+        <h1>Loading....</h1>
     </div>
 </template>

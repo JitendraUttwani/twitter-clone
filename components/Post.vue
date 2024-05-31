@@ -1,7 +1,3 @@
-
-
-
-
 <template>
     <div class="flex border-gray-600 w-full border-b-2">
         <NuxtLink :to="`/profile/${post.user_id}`">
@@ -15,7 +11,6 @@
                 <div class="flex p-2 cursor-pointer">
                     <h1 class="">
                         {{ post.user.name }} 
-                        
                     </h1>
                     <span class="ml-2 text-gray-600">@{{ post.user.username }}</span>
                     <span class="ml-2 text-gray-600"> . {{ formatDate(post.created_at) }}</span>

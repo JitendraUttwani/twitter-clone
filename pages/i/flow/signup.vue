@@ -21,7 +21,7 @@ const locationSchema = yup.string().max(30, 'Location cannot exceed 30 character
 const usernameSchema = yup.string().required('Username is required');
 
 const checkAccountExists = async (field, value) => {
-  const { data, error } = await useFetch(`https://twitter-clone-api-6kjm.onrender.com/api/v1/auth/check-${field}`, {
+  const { data, error } = await useFetch(`http://localhost:5000/api/v1/auth/check-${field}`, {
     method: 'POST',
     body: JSON.stringify({ [field]: value }),
     headers: { 'Content-Type': 'application/json' }
@@ -54,7 +54,7 @@ const signup = async (values) => {
       return alert('Username already taken. Please choose another one');
     }
 
-    const { data, error } = await useFetch('https://twitter-clone-api-6kjm.onrender.com/api/v1/auth/register', {
+    const { data, error } = await useFetch('http://localhost:5000/api/v1/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         name,

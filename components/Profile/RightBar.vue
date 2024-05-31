@@ -1,32 +1,34 @@
 <script setup>
 
 import axios from 'axios';
+import { onMounted } from 'vue';
 
 
 const users = ref([]);
 const followed = ref([]);
-const { data: userData, error } = await useAsyncData('users', async () => {
+const fetchSuggestions = async () => {
   try {
-    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/suggestions', {
+    const response = await axios.get('http://localhost:5000/api/v1/user/suggestions', {
       headers: {
         Authorization: `Bearer ${getCookie('token')}`,
       },
     });
     if (response.data.success) {
-      return response.data.data;
+      users.value = response.data.data;
+      console.log(users.value);
     } else {
       console.error('Error fetching suggestions');
-      return [];
+      alert('Error fetching suggestions');
     }
   } catch (err) {
     console.error('Unexpected error fetching suggestions:', err);
-    return [];
+    alert('Unexpected error fetching suggestions');
   }
-});
+};
 
-if (!error.value) {
-  users.value = userData.value;
-}
+onMounted(() => {
+    fetchSuggestions();
+})
 
 
 const follow = async (user_id,event) => {
@@ -34,7 +36,7 @@ const follow = async (user_id,event) => {
         event.stopPropagation();
 
         const token = 'Bearer ' + getCookie('token');
-        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/follow/${user_id}`;
+        const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
             headers: {
@@ -60,7 +62,7 @@ const unfollow = async (user_id,event) => {
     try {
         event.stopPropagation();
         const token = 'Bearer ' + getCookie('token');
-        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/unfollow/${user_id}`;
+        const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',
             headers: {

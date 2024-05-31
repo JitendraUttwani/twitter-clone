@@ -1,37 +1,13 @@
 <script setup>
 
-import axios from 'axios';
 
+const props = defineProps({
+  posts: {
+    type: Array,
+    required: true,
+  },
+})
 
-const token = getCookie('token');
-
-const { data: timelineData, error } = await useAsyncData(async () => {
-  try{
-
-    if (!token) {
-      throw new Error('No token found');
-    }
-  
-    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/timeline', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  
-    if (response.data.success === false) {
-      throw new Error('Error fetching timeline');
-    }
-  
-    return response.data.data;
-  }catch(err){
-    console.error(err);
-    alert('Can\'t get timeline')
-  }
-}, { server: true });
-
-console.log(timelineData);
-const posts = timelineData;
-// console.log(posts.value);
 </script>
 
 
@@ -52,11 +28,8 @@ const posts = timelineData;
         <div class="border text-blue-500 p-3 border-gray-600 text-center">
             Show All posts
         </div>
-        <div v-for="post in posts" :key="post.post_id">
-            <!-- {{ console.log(post) }} -->
+        <div v-for="post in props.posts" :key="post.post_id">
             <Post :post="post" />
         </div>
-        
-
     </div>
 </template>

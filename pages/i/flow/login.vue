@@ -23,7 +23,7 @@ const nextStep = async (values) => {
             console.log(email.value);
             return alert('Please enter an email');
         }
-        const { data, error } = await useFetch('https://twitter-clone-api-6kjm.onrender.com/api/v1/auth/check-email', {
+        const { data, error } = await useFetch('http://localhost:5000/api/v1/auth/check-email', {
             method: 'POST',
             body: { email: email.value },
         });
@@ -52,7 +52,7 @@ const login = async (values) => {
         if (!email.value || !password.value) {
             return alert('Please enter your email and password');
         }
-        const { data, error } = await useFetch('https://twitter-clone-api-6kjm.onrender.com/api/v1/auth/login', {
+        const { data, error } = await useFetch('http://localhost:5000/api/v1/auth/login', {
             method: 'POST',
             body: { email: email.value, password: password.value },
         });

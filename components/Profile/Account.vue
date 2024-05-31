@@ -14,7 +14,7 @@ const posts = computed(() => postDetails.value.map((post) => ({user: user.value,
 const fetchUserProfile = async () => {
     try{
 
-        const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/profile', {
+        const response = await axios.get('http://localhost:5000/api/v1/user/profile', {
           headers: {
             Authorization: `Bearer ${useCookie('token').value}`
           }
@@ -93,5 +93,8 @@ onMounted(() => {
         <div v-for="post in posts" :key="post.post_id">
             <Post :post="post" />
         </div> 
+    </div>
+    <div v-else class="col-start-2 col-end-4 border-gray-600 flex flex-col h-full">
+        <h1>Loading....</h1>
     </div>
 </template>
