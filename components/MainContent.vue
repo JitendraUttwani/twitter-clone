@@ -1,5 +1,7 @@
 <!-- components/MainContent.vue -->
 <template>
+  <!-- header -->
+  <slot name="Header"><DefaultHeader /></slot>
   <main class="flex flex-row w-full h-4/6">
     <div class="image justify-start w-7/12 h-4/6">
       <img src="~/assets/images/twitter-logo.jpg" alt="Twitter Logo" />
@@ -16,4 +18,6 @@
       <NuxtLink to="/i/flow/login" class="bg-zinc-950 border-2 cursor-pointer border-blue-700 font-bold text-blue-700 text-center p-2 mt-4 rounded-2xl w-1/2">Sign in</NuxtLink>
     </div>
   </main>
+
+  <!-- footer -->
 </template>

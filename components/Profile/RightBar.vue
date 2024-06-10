@@ -3,40 +3,49 @@
 import axios from 'axios';
 import { onMounted } from 'vue';
 
+const userStore = useUserStore();
+
+const { followed } = userStore;
+
+console.log(followed);
 
 const users = ref([]);
-const followed = ref([]);
+// const followed = ref([]);
 const fetchSuggestions = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/api/v1/user/suggestions', {
+    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/suggestions', {
       headers: {
         Authorization: `Bearer ${getCookie('token')}`,
       },
     });
     if (response.data.success) {
       users.value = response.data.data;
-      console.log(users.value);
+    //   console.log(users.value);
     } else {
       console.error('Error fetching suggestions');
       alert('Error fetching suggestions');
     }
-  } catch (err) {
-    console.error('Unexpected error fetching suggestions:', err);
-    alert('Unexpected error fetching suggestions');
-  }
+    } catch (err) {
+        console.error('Unexpected error fetching suggestions:', err);
+        alert('Unexpected error fetching suggestions');
+    }
 };
 
-onMounted(() => {
-    fetchSuggestions();
+onMounted(async () => {
+    // if(!userStore.isFetched){
+    //     await userStore.fetchUserData();
+    //     userStore.fetchComplete();
+    // }
+    await fetchSuggestions();
 })
 
 
 const follow = async (user_id,event) => {
     try {
         event.stopPropagation();
-
+        event.preventDefault();
         const token = 'Bearer ' + getCookie('token');
-        const url = `http://localhost:5000/api/v1/user/follow/${user_id}`;
+        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/${user_id}/follow`;
         const {data,error} = await useFetch(url, {
             method: 'POST',
             headers: {
@@ -47,22 +56,24 @@ const follow = async (user_id,event) => {
         if (data.value.success === false) {
             console.error('Error following user:');
         }else{
-            console.log(data.value);
-            followed.value.push(user_id);
+            // console.log(data.value);
+            // console.log(followed);
+            userStore.addFollowings(user_id);
         }
         
         
     } catch (err) {
         console.error('Unexpected error following user:', err);
-        error.value = err;
     }
 }
 
 const unfollow = async (user_id,event) => {
     try {
         event.stopPropagation();
+        event.preventDefault();
+        
         const token = 'Bearer ' + getCookie('token');
-        const url = `http://localhost:5000/api/v1/user/unfollow/${user_id}`;
+        const url = `https://twitter-clone-api-6kjm.onrender.com/api/v1/user/${user_id}/unfollow`;
         const {data,error} = await useFetch(url, {
             method: 'DELETE',
             headers: {
@@ -73,11 +84,12 @@ const unfollow = async (user_id,event) => {
         if (data.value.success === false) {
             console.error('Error unfollowing user:');
         }else{
-            followed.value.splice(followed.value.indexOf(user_id),1);
+            console.log(followed);
+            userStore.removeFollowings(user_id)
+            // followed.value.splice(followed.value.indexOf(user_id),1);
         }
   } catch (err) {
     console.error('Unexpected error following user:', err);
-    error.value = err;
   }
 }
 
@@ -110,8 +122,8 @@ const unfollow = async (user_id,event) => {
         </div>
         <div class="ml-10 mt-10 flex flex-col gap-2">
             <h1 class="text-left font-bold text-xl">Who to follow</h1>
-            <div v-for="user in users"  class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-2 rounded-2xl w-4/6">
-                <NuxtLink :to="`/profile/${user.user_id}`" class="flex flex-row mr-10">
+            <div v-for="user in users" :key="user.user_id" class="bg-zinc-950 cursor-pointer flex text-slate-700 text-center font-bold p-2 mt-2 rounded-2xl w-4/6">
+                <NuxtLink :to="`/${user.user_id}`" class="flex flex-row mr-10">
                     <img src="~/assets/images/userimage.jpg" alt="" class="h-12 w-12 rounded-full">
                     <div class="flex flex-col">
                         <span class="ml-2 text-white">{{user.name}}</span>

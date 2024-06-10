@@ -10,7 +10,7 @@ const postTweet = async () => {
 
   try {
     console.log('post tweet')
-    const response = await useFetch('http://localhost:5000/api/v1/post', {
+    const response = await useFetch('https://twitter-clone-api-6kjm.onrender.com/api/v1/post', {
       method: 'POST',
       body: JSON.stringify({ message: text.value }),
       headers: {

@@ -1,4 +1,5 @@
 <script setup>
+
 definePageMeta({
     middleware: ['auth'],
     layout: 'home',
@@ -11,13 +12,12 @@ const posts = ref([]);
 
 const token = getCookie('token');
 
-const { data: timelineData, error } = await useAsyncData(async () => {
+const { data, error } = await useAsyncData('RANDOM_URL',async () => {
   try{
     if (!token) {
       throw new Error('No token found');
     }
-  
-    const response = await axios.get('http://localhost:5000/api/v1/user/timeline', {
+    const response = await axios.get('https://twitter-clone-api-6kjm.onrender.com/api/v1/user/timeline', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -34,13 +34,10 @@ const { data: timelineData, error } = await useAsyncData(async () => {
   }
 }, { server: true });
 
-// console.log(timelineData);
-
-posts.value = timelineData.value;
-
+posts.value = data.value;
 
 </script>
 
 <template>
-    <ProfileMainContent :posts="posts"/>
+    <ProfileMainContent v-if="posts" :posts="posts"/>
 </template>

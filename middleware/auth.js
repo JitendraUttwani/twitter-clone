@@ -1,13 +1,17 @@
-
-export default defineNuxtRouteMiddleware((to, from) => {
-    if(process.client){
-        const isAuthenticated = !!getCookie('token');
-        if (!isAuthenticated && !['login', 'register'].includes(to.name)) {
-          return navigateTo('i/flow/login');
-        }
-        if (isAuthenticated && ['login', 'register'].includes(to.name)) {
-          return navigateTo('/');
-        }
-    }
-  });
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  const userStore = useUserStore();
+  const token = useCookie('token').value;
   
+  if (token) {
+    if (!userStore.isFetched) {
+      const userId = useCookie('user').value.user_id;
+      await userStore.fetchUserData(userId);
+      userStore.fetchComplete();
+    }
+  } else {
+    if (to.meta.requiresAuth) {
+      return navigateTo('/login');
+    }
+  }
+
+});

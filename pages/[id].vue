@@ -5,9 +5,10 @@ definePageMeta({
     layout: 'home',
 })
 
+
 </script>
 
 
 <template>
-    <ProfileAccountId :id="$route.params.id"/>
+    <ProfileAccountId :id="parseInt($route.params.id)"/>
 </template>

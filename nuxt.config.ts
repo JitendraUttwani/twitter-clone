@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
@@ -9,11 +8,11 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    '@vesp/nuxt-fontawesome',
+    '@vesp/nuxt-fontawesome','@pinia/nuxt'
   ],
   fontawesome: {
     icons: {
-      solid: ['cog','ellipsis'],
+      solid: ['cog','ellipsis','heart','thumbs-up'],
     }
   }
 })

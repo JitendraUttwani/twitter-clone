@@ -4,7 +4,6 @@
 const props = defineProps({
   posts: {
     type: Array,
-    required: true,
   },
 })
 
@@ -28,7 +27,7 @@ const props = defineProps({
         <div class="border text-blue-500 p-3 border-gray-600 text-center">
             Show All posts
         </div>
-        <div v-for="post in props.posts" :key="post.post_id">
+        <div v-for="post in posts" :key="post.post_id">
             <Post :post="post" />
         </div>
     </div>
