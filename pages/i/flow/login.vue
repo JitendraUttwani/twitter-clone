@@ -68,7 +68,6 @@ const login = async (values) => {
             console.log(data.value.data);
             const {user_id,name,username} = data.value.data;
             setCookie('user',{user_id,name,username});
-            await userStore.fetchUserData(user_id);
             navigateTo('/home');
         } else {
             alert('Incorrect email or password. Please try again.');

@@ -1,8 +1,8 @@
 <template>
   <div class="container h-screen w-full">
-    <Header></Header>
+    <!-- <Header></Header> -->
     <slot></slot>
-    <Footer></Footer> 
+    <!-- <Footer></Footer>  -->
   </div>
 </template>
   

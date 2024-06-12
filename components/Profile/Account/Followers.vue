@@ -32,6 +32,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
+
 import axios from 'axios';
 
 const props = defineProps({
@@ -43,6 +44,7 @@ const props = defineProps({
 
 const followers = ref([]);
 const userStore = useUserStore();
+const {fetchUserFollowings} = useFetchData();
 
 const fetchFollowers = async () => {
   try {
@@ -63,7 +65,9 @@ const fetchFollowers = async () => {
 };
 
 onMounted(async () => {
+  await fetchUserFollowings();
   await fetchFollowers();
+  
 });
 
 const follow = async (user_id, event) => {

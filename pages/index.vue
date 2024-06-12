@@ -1,4 +1,4 @@
 <template>
-  <MainContent />
+  <ParentMainContent />
 </template>
   

@@ -5,9 +5,11 @@ import { onMounted } from 'vue';
 
 const userStore = useUserStore();
 
-const { followed } = userStore;
+// const { followed } = userStore;
 
-console.log(followed);
+// const followedUsers = computed(() => userStore.followed)
+
+// console.log(followed);
 
 const users = ref([]);
 // const followed = ref([]);
@@ -20,6 +22,7 @@ const fetchSuggestions = async () => {
     });
     if (response.data.success) {
       users.value = response.data.data;
+
     //   console.log(users.value);
     } else {
       console.error('Error fetching suggestions');
@@ -31,11 +34,14 @@ const fetchSuggestions = async () => {
     }
 };
 
+const {fetchUserFollowings} = useFetchData();
+
 onMounted(async () => {
     // if(!userStore.isFetched){
     //     await userStore.fetchUserData();
     //     userStore.fetchComplete();
     // }
+    await fetchUserFollowings();
     await fetchSuggestions();
 })
 
@@ -58,7 +64,10 @@ const follow = async (user_id,event) => {
         }else{
             // console.log(data.value);
             // console.log(followed);
+            console.log(user_id);
             userStore.addFollowings(user_id);
+            if(parseInt(userStore.currentUser) === parseInt(user_id))
+                userStore.setCurrentUserFollowers(userStore.currentUserFollowers + 1);
         }
         
         
@@ -84,8 +93,10 @@ const unfollow = async (user_id,event) => {
         if (data.value.success === false) {
             console.error('Error unfollowing user:');
         }else{
-            console.log(followed);
+            // console.log(followed);
             userStore.removeFollowings(user_id)
+            if(parseInt(userStore.currentUser) === parseInt(user_id))
+                userStore.setCurrentUserFollowers(userStore.currentUserFollowers - 1);
             // followed.value.splice(followed.value.indexOf(user_id),1);
         }
   } catch (err) {
@@ -130,7 +141,7 @@ const unfollow = async (user_id,event) => {
                         <span class="ml-2 font-medium">@{{user.username}}</span>
                     </div>
                 </NuxtLink>
-                <div v-if="!followed.includes(user.user_id)" class="bg-white ml-12 cursor-pointer text-slate-700 align-middle self-center justify-self-center text-center font-bold p-2 justify-center items-center mt-1 h-10 rounded-2xl w-1/2" @click="follow(user.user_id,$event)">Follow</div>
+                <div v-if="!userStore.followed.includes(user.user_id)" class="bg-white ml-12 cursor-pointer text-slate-700 align-middle self-center justify-self-center text-center font-bold p-2 justify-center items-center mt-1 h-10 rounded-2xl w-1/2" @click="follow(user.user_id,$event)">Follow</div>
                 <div v-else class="bg-white ml-12 cursor-pointer text-slate-700 align-middle self-center justify-self-center text-center font-bold p-2 justify-center items-center mt-1 rounded-2xl w-1/2" @click="unfollow(user.user_id,$event)">unFollow</div>
             </div>
           

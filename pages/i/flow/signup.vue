@@ -84,7 +84,6 @@ const signup = async (values) => {
         // console.log(data.value.data)
         const {user_id,name,username} = data.value.data;
         setCookie('user',{user_id,name,username}); 
-        await userStore.fetchUserData(user_id);
         router.push('/home');
     }
   } catch (error) {

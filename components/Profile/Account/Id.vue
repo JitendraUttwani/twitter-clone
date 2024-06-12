@@ -18,6 +18,14 @@ const posts = computed(() => {
     }));
 });
 
+const userStore = useUserStore();
+
+const followerCount = computed(() => user.value.followerCount);
+const followingCount = computed(() => user.value.followingCount);
+
+
+
+const isLoggedInUser = computed(() => useCookie('user').value.user_id === user.value.user_id);
 // const posts = computed(() => {
 //     const newPosts = postDetails.value.map((post) => {
 //         return {
@@ -41,6 +49,8 @@ const fetchUserProfile = async () => {
         if (response.data.success) {
             // console.log(response.data.data);
             user.value = response.data.data;
+            userStore.setCurrentUserFollowers(response.data.data.followerCount);
+            userStore.setCurrentUser(response.data.data.user_id)
             user.value.created_at = format(new Date(user.value.created_at), 'dd MMMM yyyy');
         } else {
             console.error('Error fetching user profile')
@@ -64,6 +74,7 @@ const fetchPosts = async () => {
         if (response.data.success) {
             // console.log(response.data.data);
             userPosts.value = response.data.data;
+
         } else {
           console.error('Error fetching user profile');
         }
@@ -76,13 +87,15 @@ const fetchPosts = async () => {
 // const usersFollowed = ref([]);
 // const usersFollowing = ref([]);
 
-const userStore = useUserStore();
+
+const {fetchUserFollowings} = useFetchData();
 
 onMounted(async () => {
     // if(!userStore.isFetched){
     //     await userStore.fetchUserData();
     //     await userStore.fetchComplete();
     // }
+    await fetchUserFollowings();
     await fetchUserProfile();
     await fetchPosts();
 });
@@ -95,7 +108,6 @@ const tabs = ['Posts','Followers','Followings','Liked'];
 console.log(userStore.followed);
 const isFollowed = computed(() => userStore.followed.includes(props.id));
 // console.log(user.value);
-const followerCount = computed(() => userStore.followed.length);
 // console.log(isFollowe)
 
 const follow = async (user_id) => {
@@ -115,16 +127,15 @@ const follow = async (user_id) => {
         if (data.value.success === false) {
             console.error('Error following user:');
         }else{
-            console.log(data.value);
+            // console.log(data.value);
             userStore.addFollowings(user_id)
-            followerCount.value++;
+            userStore.setCurrentUserFollowers(userStore.currentUserFollowers + 1);
             // followed.value.push(user_id);
         }
         
         
     } catch (err) {
         console.error('Unexpected error following user:', err);
-        error.value = err;
     }
 }
 
@@ -145,12 +156,11 @@ const unfollow = async (user_id) => {
             console.error('Error unfollowing user:');
         }else{
             userStore.removeFollowings(user_id);
-            followerCount.value--;
+            userStore.setCurrentUserFollowers(userStore.currentUserFollowers - 1);
             // followed.value.splice(followed.value.indexOf(user_id),1);
         }
   } catch (err) {
     console.error('Unexpected error following user:', err);
-    error.value = err;
   }
 }
 
@@ -179,8 +189,7 @@ const unfollow = async (user_id) => {
                     <h1 class="font-bold text-left mt-2 text-lg">{{ user.name }}</h1>
                     <p class="text-gray-400 text-sm">@{{ user.username }}</p>
                 </div>
-                {{ console.log(isFollowed) }}
-                <div v-if="user.user_id === useCookie('user').value.user_id" class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="">Edit Profile</div>
+                <div v-if="isLoggedInUser" class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="">Edit Profile</div>
                 <div v-else>
                     <div v-if="!isFollowed" class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="follow(user.user_id)">Follow</div>
                     <div v-else class="border bg-inherit justify-around border-white mr-4 text-gray-100 h-10 cursor-pointer text-center font-bold p-2 mt-4 rounded-2xl w-36" @click="unfollow(user.user_id)">unFollow</div>
@@ -193,8 +202,8 @@ const unfollow = async (user_id) => {
                     <p class="text-gray-400 mr-3">Joined {{ format(new Date(user.created_at), 'dd MMMM yyyy') }}</p>
                 </div>
                 <div class="mt-2 flex">
-                    <p class="text-gray-400"><span class="text-gray-100">{{ user.followingCount }}</span> Following</p>
-                    <p class="text-gray-400 ml-3"><span class="text-gray-100">{{ followerCount }}</span> Follower</p>
+                    <p class="text-gray-400"><span class="text-gray-100">{{ (isLoggedInUser ? userStore.followed.length : user.followingCount) }}</span> Following</p>
+                    <p class="text-gray-400 ml-3"><span class="text-gray-100">{{ (!isLoggedInUser ? userStore.currentUserFollowers : user.followerCount) }}</span> Follower</p>
                 </div>
             </div>
         </div>

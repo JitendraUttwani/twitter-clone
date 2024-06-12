@@ -7,22 +7,32 @@ import axios from 'axios';
 // Followings count bug fix
 // Authenticated landing page, login and register
 // Footer and header implementation in MainContent via slots
-// useComposables for common api/functions calls
 
 
 export const useUserStore = defineStore('user', () => {
   const followed = ref([]);
+  const currentUserFollowers = ref(0);
+  const currentUser = ref(null);
   const likedPosts = ref([]);
-  const isFetched = ref(false);
+  const followerCount = ref(0);
+  const followingCount = ref(0);
+  const likedPostsFetched = ref(false);
+  const followedFetched = ref(false);
+
+  
+
+
   const addFollowings = (userId) => {
     if (!followed.value.includes(userId)) {
       followed.value.push(userId);
+      followedFetched.value = false;
     }
   };
 
-  const setLikedPosts = (post_id) => {
+  const addLikedPosts = (post_id) => {
     if (!likedPosts.value.includes(post_id)) {
       likedPosts.value.push(post_id);
+      likedPostsFetched.value = false;
     }
   };
 
@@ -30,6 +40,7 @@ export const useUserStore = defineStore('user', () => {
     const index = followed.value.indexOf(userId);
     if (index > -1) {
       followed.value.splice(index, 1);
+      followedFetched.value = false;
     }
   };
 
@@ -37,64 +48,56 @@ export const useUserStore = defineStore('user', () => {
     const index = likedPosts.value.indexOf(post_id);
     if (index > -1) {
       likedPosts.value.splice(index, 1);
+      likedPostsFetched.value = false;
     }
   };
 
-  const fetchUserData = async () => {
-    try {
-      const token = useCookie('token').value;
-      const userId = useCookie('user').value.user_id;
-      // console.log(userId);
-
-      const followingsResponse = await axios.get(`https://twitter-clone-api-6kjm.onrender.com/api/v1/user/${userId}/followings`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (followingsResponse.data.success) {
-        console.log(followingsResponse.data);
-        const followingIds = followingsResponse.data.data.map(user => user.user_id);
-        followed.value = followingIds;
-      } else {
-        throw new Error('Failed to fetch followings');
-      }
-
-      const likedPostsResponse = await axios.get(`https://twitter-clone-api-6kjm.onrender.com/api/v1/user/${userId}/liked-posts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (likedPostsResponse.data.success) {
-        console.log(likedPostsResponse.data);
-        const likedPostIds = likedPostsResponse.data.data.map(post => post.post_id);
-        likedPosts.value = likedPostIds;
-      } else {
-        throw new Error('Failed to fetch liked posts');
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchComplete = () => {
-    isFetched.value = true;
+  const setLikedPosts = (data) => {
+    console.log(typeof data);
+    console.log(data);
+    likedPosts.value = data;
+    likedPostsFetched.value = true;
   }
-  const fetchIncomplete = () => {
-    isFetched.value = false;
+
+  const setFollowings = (data) => {
+    followed.value = data;
+    followedFetched.value = true;
   }
+
+  const setFollowingCount = (data) => {
+    followingCount.value = data;
+  }
+  const setFollowerCount = (data) => {
+    followerCount.value = data;
+  }
+
+  const setCurrentUserFollowers = (data) => {
+    currentUserFollowers.value = data;
+  }
+
+  const setCurrentUser = (data) => {
+    currentUser.value = data;
+  }
+
 
   return {
     followed,
     likedPosts,
-    setLikedPosts,
-    removeLikedPosts,
+    likedPostsFetched,
+    followedFetched,
+    addLikedPosts,
     addFollowings,
     removeFollowings,
-    fetchUserData,
-    fetchComplete,
-    fetchIncomplete,
-    isFetched,
+    removeLikedPosts,
+    setLikedPosts,
+    setFollowings,
+    followerCount,
+    followingCount,
+    setFollowingCount,
+    setFollowerCount,
+    currentUserFollowers,
+    setCurrentUserFollowers,
+    currentUser,
+    setCurrentUser,
   };
 });

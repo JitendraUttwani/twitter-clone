@@ -41,6 +41,7 @@ const props = defineProps({
   }
 });
 
+
 const followings = ref([]);
 const userStore = useUserStore();
 
@@ -61,8 +62,10 @@ const fetchFollowings = async () => {
     console.log(error);
   }
 };
+const {fetchUserFollowings} = useFetchData();
 
 onMounted(async () => {
+  await fetchUserFollowings();
   await fetchFollowings();
 });
 

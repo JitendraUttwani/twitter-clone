@@ -32,8 +32,9 @@
                         <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="bookmark" />
                         <font-awesome-icon class="cursor-pointer rounded-full p-2 hover:bg-gray-800 transition-colors" icon="arrow-up-from-bracket" /> -->
                         <div>
-                            <font-awesome v-if="!isLiked" class="cursor-pointer rounded-full hover:bg-gray-800 transition-colors" icon="thumbs-up" @click="likePost(post.post_id)" />
-                            <font-awesome v-if="isLiked" class="cursor-pointer rounded-full hover:bg-gray-800 transition-colors text-blue-900" icon="thumbs-up" @click="unlikePost(post.post_id)" />
+                            <!-- {{ Array.isArray(userStore.likedPosts) }} -->
+                            <font-awesome v-if="!userStore.likedPosts.includes(post.post_id)" class="cursor-pointer rounded-full hover:bg-gray-800 transition-colors" icon="thumbs-up" @click="likePost(post.post_id)" />
+                            <font-awesome v-else class="cursor-pointer rounded-full hover:bg-gray-800 transition-colors text-blue-900" icon="thumbs-up" @click="unlikePost(post.post_id)" />
                             <span class="ml-2">{{ likeCount }}</span>
                         </div>
                     </ul>
@@ -52,20 +53,28 @@ import axios from 'axios';
 
 const userStore = useUserStore();
 
-const {likedPosts} = userStore;
 
 const props = defineProps({
     post: {
         type: Object,
         required: true,
+
     },
 });
 
-
-const isLiked = computed(() => userStore.likedPosts.includes(props.post.post_id));
-const likeCount = ref(parseInt(props.post.likeCount));
+// console.log(typeof userStore.likedPosts);
+// console.log(userStore.likedPosts)
+// const refStore = ref(0);
+// const referStore = ref(props.post.likeCount);
+const likeCount = computed({
+    get: () => props.post.likeCount,
+    set: (value) => {
+        props.post.likeCount = value;
+    }
+});
 
 // console.log(props.post);
+
 
 const formatDate = (date) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true }).replace('about ', '');
@@ -103,13 +112,12 @@ const formatDate = (date) => {
 //         console.log(error);
 //     }
 // }
+
+const {fetchUserLikedPosts} = useFetchData();
+
+
 onMounted(async () => {
-    console.log(userStore.isFetched);
-    if(!userStore.isFetched) {
-        await userStore.fetchUserData();
-        userStore.fetchComplete();
-    console.log(userStore.likedPosts);
-    }
+    await fetchUserLikedPosts();
 })
 
 
@@ -129,7 +137,7 @@ const likePost = async (post_id) => {
         }else{
             // console.log(data.value);
             // console.log(followed);
-            userStore.setLikedPosts(post_id);
+            userStore.addLikedPosts(post_id);
             likeCount.value++;
         }
         
